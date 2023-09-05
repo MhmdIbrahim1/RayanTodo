@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RayanTodo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add">add</string>
+    <string name="enter_new_tile">Enter New Tile</string>
+    <string name="save">Save</string>
+    <string name="enter_description">Enter Description</string>
+</resources>
