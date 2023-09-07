@@ -21,11 +21,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    FloatingActionButton btnAddTask;
-    private TodoAdapter todoAdapter;
-    private DatabaseAdapter dbAdapter;
+    FloatingActionButton btnAddTask; // Floating action button for adding tasks
+    private TodoAdapter todoAdapter; // Adapter for the RecyclerView
+    private DatabaseAdapter dbAdapter; // Database adapter for managing tasks
+    List<TodoModel> todoList; // List to hold TodoModel objects for tasks in the database
 
-    List<TodoModel> todoList ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,22 +33,29 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the database adapter
         dbAdapter = new DatabaseAdapter(this);
-        dbAdapter.openDatabase(); // Open the database
-        todoAdapter = new TodoAdapter(dbAdapter, this);
 
-        btnAddTask = findViewById(R.id.floatingActionButton);
+        dbAdapter.openDatabase(); // Open the database for writing
 
-        // Set an event listener for the FAB
+        todoAdapter = new TodoAdapter(dbAdapter, this); // Initialize the RecyclerView adapter
+
+        btnAddTask = findViewById(R.id.floatingActionButton); // Initialize the FAB for adding tasks
+
+        // Set an event listener for the button to open the AddUpdateActivity for adding tasks
         btnAddTask.setOnClickListener(v ->{
+            // Go  to the AddUpdateActivity for adding tasks
             Intent intent = new Intent(this, AddUpdateActivity.class);
             startActivity(intent);
         });
+
+        // Initialize and set up the RecyclerView
         setupRecyclerView();
+
+        // Set up the ItemTouchHelper for the RecyclerView to handle swipe  for editing tasks
         setUpItemTouchHelperForTaskRv();
     }
 
+    // Method to set up the ItemTouchHelper for the  RecyclerView to handle swipe for editing tasks
     private void setUpItemTouchHelperForTaskRv() {
-        // Create an ItemTouchHelper instance
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
             @Override
@@ -61,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.RIGHT) {
                     TodoModel task = todoList.get(position);
-                    // Navigate to the AddUpdateActivity
+
+                    // Navigate to the AddUpdateActivity for editing the task
                     Intent intent = new Intent(MainActivity.this, AddUpdateActivity.class);
                     intent.putExtra("title", task.getTitle());
                     intent.putExtra("description", task.getDescription());
@@ -76,13 +84,14 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView((RecyclerView) findViewById(R.id.recyclerView));
     }
 
+    // Method to set up  the RecyclerView
     private void setupRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(todoAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Set layout manager
+        recyclerView.setAdapter(todoAdapter); // Set adapter for the RecyclerView
 
+        // Load tasks from the database and set them in the RecyclerView
         todoList = dbAdapter.getAllTasks();
         todoAdapter.setTasks(todoList);
-
     }
 }
